@@ -27,3 +27,6 @@
 *.exe
 *.out
 *.app
+/Debug/
+*.v12.suo
+*.sdf
