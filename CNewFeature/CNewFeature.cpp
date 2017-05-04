@@ -7,6 +7,7 @@
 	1. 可变长模板参数测试
 	2. std::function,std::bind 测试 
 	3. std::move 测试
+	4. 右值引用
 
 */
 /************************************************************************/
@@ -119,8 +120,20 @@ struct Foo {
 	int data = 10;
 };
 
-int _tmain(int argc, _TCHAR* argv[])
-{
+struct Value {
+	void lrValue(int &a){//左值引用
+		std::cout << "left value " << a << std::endl;
+	}
+	void lrValue(int &&a){//右值引用
+		std::cout << "right value " << a << std::endl;
+		std::cout << "right value " << ++a << std::endl;//可变
+
+		lrValue(++a);//继续调用，证明a在这里已经是左值了
+	}
+};
+
+void TestBind(){
+	printf("******************测试 std::bind****************************\n");
 	//std::bind测试
 	int n = 7;
 	// (_1 and _2 are from std::placeholders, and represent future
@@ -144,11 +157,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	Foo foo;
 	auto f3 = std::bind(&Foo::print_sum, &foo, 95, std::placeholders::_1);
 	f3(5);
+}
 
-	printf("**********************************************\n");
+void TestTemplate(){
 
+	printf("*********************可变长模板参数*************************\n");
 	//可变长模板参数
-	C11::test1("[%s] %d + %d = %d\n","add",1,2,3);
+	C11::test1("[%s] %d + %d = %d\n", "add", 1, 2, 3);
 	const char* s1 = "123456";
 
 	auto lam = [s1]()->void{
@@ -157,10 +172,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	C11 obj;
 	obj.setFunc(lam);
 	obj.test2();
-	
-	printf("**********************************************\n");
+}
 
-	//std::move 测试
+void TestMove(){
+	printf("********************测试 std::move**************************\n");
 	std::string str = "Hello";
 	std::vector<std::string> v;
 
@@ -177,6 +192,44 @@ int _tmain(int argc, _TCHAR* argv[])
 	std::cout << "现在c++11的move, str is \"" << str << "\"\n";
 
 	std::cout << "我们的字符串队列 \"" << v[0] << "\", \"" << v[1] << "\"\n";
+}
+
+void TestRightValue(){
+	printf("********************测试 右值引用**************************\n");
+	Value va;
+	int val = 10;
+	va.lrValue(val);//左值引用
+	/*
+	如果没有定义 lrValue(int && n)//我们将不能使用下面的写法
+	*/
+	va.lrValue(10);//右值引用
+}
+
+void TestXor(){
+	printf("********************测试 异或**************************\n");
+	char p1[] = "123abc";
+	const char* key = "xxxxx";
+	std::cout << "原来的字符串:" << p1 << std::endl;
+
+	int keyLen = strlen(key);
+	for (int i=0; i < strlen(p1); i++){
+		p1[i] = p1[i] ^ key[i%keyLen];
+	}
+	std::cout << "异或1次的字符串:" << p1 << std::endl;
+
+	for (int i=0; i < strlen(p1); i++){
+		p1[i] = p1[i] ^ key[i%keyLen];
+	}
+	std::cout << "异或2次的字符串:" << p1 << std::endl;
+}
+
+int _tmain(int argc, _TCHAR* argv[])
+{
+	TestXor();
+	TestBind();
+	TestMove();
+	TestRightValue();
+	TestTemplate();
 
 	getchar();
 
