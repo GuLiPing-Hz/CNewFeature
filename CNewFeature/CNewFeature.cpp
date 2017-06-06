@@ -159,6 +159,9 @@ void TestBind(){
 	Foo foo;
 	auto f3 = std::bind(&Foo::print_sum, &foo, 95, std::placeholders::_1);
 	f3(5);
+
+	std::function<int()> f4 = std::bind(g, 1);
+	printf("f4 = %d\n", f4());
 }
 
 void TestTemplate(){
@@ -445,6 +448,18 @@ void TestThread(){
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	int big = 0x8f9fafbf;
+	char* p = (char*)&big;
+	unsigned char* pU = (unsigned char*)p;
+	/*
+		内存地址从	小 ---->  大
+
+		数据高位放在高位地址 0x9f < 0x8f  产出 < 小端
+		数据高位放在低位地址 0x8f > 0x9f  产出 > 大端
+	*/
+	unsigned char big0 = p[0];
+	printf("小端 %#x : %x,%#X,%x,%x\n", big0, p[0] & 0xff, p[1] & 0xff, pU[2], p[3]);
+
 	TestXor();
 	TestBind();
 	TestMove();
