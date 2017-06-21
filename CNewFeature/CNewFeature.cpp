@@ -446,10 +446,45 @@ void TestThread(){
 	//sub.join();
 }
 
+#define	OP_LITTLEENDIAN	'<'		/* little endian */
+#define	OP_BIGENDIAN	'>'		/* big endian */
+#define	OP_NATIVE	'='		/* native endian */
+
+int doendian(int c)
+{
+	int x = 1;
+	int e = *(char*)&x;
+	if (c == OP_LITTLEENDIAN) return !e;
+	if (c == OP_BIGENDIAN) return e;
+	if (c == OP_NATIVE) return 0;
+	return 0;
+}
+
+void doswap(int swap, void *p, size_t n)
+{
+	if (swap)
+	{
+		char *a = (char*)p;
+		int i, j;
+		for (i = 0, j = n - 1, n = n / 2; n--; i++, j--)
+		{
+			char t = a[i]; a[i] = a[j]; a[j] = t;
+		}
+	}
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
-	int big = 0x8f9fafbf;
-	char* p = (char*)&big;
+	short num1 = 0x1234;
+	int num2 = 0x12345678;
+	long long num3 = 0x123456789abcdeff;
+	
+	char* p = (char*)&num1;
+	printf("&num1 = %#x\n", p);
+	p = (char*)&num2;
+	printf("&num2 = %#x\n", p);
+	p = (char*)&num3;
+	printf("&num3 = %#x\n", p);
 	unsigned char* pU = (unsigned char*)p;
 	/*
 		内存地址从	小 ---->  大
