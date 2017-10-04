@@ -22,6 +22,7 @@
 #include <memory>
 #include <thread>
 #include <windows.h>
+#include <map>
 
 class C11{
 
@@ -242,6 +243,60 @@ void TestVector(){
 	p = vect.data();
 	str.insert(str.begin(), vect.begin(),vect.end());
 	printf("p=%s,size=%d\n", str.c_str(), vect.size());
+}
+
+struct BufferUnit{
+	enum DataType
+	{
+		type_char = 1,//[16+1][数组长度][data]
+		type_short = 2,
+		type_int = 3,
+		type_int64 = 4,
+		type_float = 5,//[]
+		type_custom = 6,//[16+6][数组长度][{结构长度,结构体}]...
+
+		type_array = 16,//
+	};
+
+	BufferUnit(){ memset(&data, 0, sizeof(data)); }
+	virtual ~BufferUnit(){}
+
+	int type;
+
+	union Data
+	{
+		char c;
+		short s;
+		int i;
+		long long ll;
+		float f;
+	};
+
+	Data data;
+	//字符串需要另外存放
+	std::string str;
+};
+
+void printUnion(BufferUnit& bu){
+	printf("union %c(%d),%d,%d,%lld,%f\n", bu.data.c, bu.data.c, bu.data.s, bu.data.i
+		, bu.data.ll, bu.data.f);
+}
+
+void TestUnion(){
+	printf("********************测试 联合和map无效的key值************************** %s\n", __FUNCTION__);
+
+	BufferUnit bu;
+	printf("bu.size = %d,union size = %d,type size = %d\n", sizeof(bu), sizeof(bu.data), sizeof(BufferUnit::DataType));
+	bu.data.c = 48;
+	bu.data.s = 48;
+	bu.data.i = 48;
+	bu.data.ll = 48;
+	printUnion(bu);
+
+	std::map<int, int> m;
+	m[1] = 1;
+	m[2] = 2;
+	int ret = m[3];//string 返回""
 }
 
 typedef unsigned int t_uint32;
@@ -501,6 +556,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	TestRightValue();
 	TestTemplate();
 	TestVector();
+	TestUnion();
 	TestStruct();
 	TestThread();
 
