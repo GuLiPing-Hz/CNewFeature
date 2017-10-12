@@ -227,6 +227,9 @@ void TestXor(){
 		p1[i] = p1[i] ^ key[i%keyLen];
 	}
 	std::cout << "Òì»ò2´ÎµÄ×Ö·û´®:" << p1 << std::endl;
+
+	char* p = new char[100];
+	std::auto_ptr<char>pA(p);
 }
 
 void TestVector(){
