@@ -23,6 +23,7 @@
 #include <thread>
 #include <windows.h>
 #include <map>
+#include <mutex>
 
 class C11{
 
@@ -448,15 +449,13 @@ void TestStruct(){
 
 int g_Cnt = 0;
 
-#include <mutex>
-
 struct ThreadT{
 	std::mutex* mutex;
 	int step;
 };
 
-
 void AddThread(ThreadT& t,int step){
+
 	for (int i = 0; i < 10; i++)
 	{
 		std::lock_guard<std::mutex> guard(*t.mutex);
@@ -498,6 +497,8 @@ void TestThread(){
 	//分离线程
 	add.detach();
 	sub.detach();
+
+	Sleep(3000);
 
 	//等待子线程结束
 	//add.join();
