@@ -532,8 +532,29 @@ void doswap(int swap, void *p, size_t n)
 	}
 }
 
+/*取两个数的公约数*/
+int getGCD(int p,int q){//辗转相除法
+	if (p < q){//位置互换
+		p = p ^ q;
+		q = p ^ q;
+		p = p ^ q;
+	}
+	
+	do{
+		int mod = p % q;
+		if (mod == 0){
+			return q;
+		}
+
+		p = q;
+		q = mod;
+	} while (true);
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
+	int g1 = getGCD(8850, 12345678);
+
 	short num1 = 0x1234;
 	int num2 = 0x12345678;
 	long long num3 = 0x123456789abcdeff;
