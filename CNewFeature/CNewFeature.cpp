@@ -3,13 +3,13 @@
 
 
 /************************************************************************/
-/* 
+/*
 	1. 可变长模板参数测试
-	2. std::function,std::bind 测试 
+	2. std::function,std::bind 测试
 	3. std::move 测试
 	4. 右值引用
 
-*/
+	*/
 /************************************************************************/
 
 #include "stdafx.h"
@@ -219,12 +219,12 @@ void TestXor(){
 	std::cout << "原来的字符串:" << p1 << std::endl;
 
 	int keyLen = strlen(key);
-	for (int i=0; i < strlen(p1); i++){
+	for (int i = 0; i < strlen(p1); i++){
 		p1[i] = p1[i] ^ key[i%keyLen];
 	}
 	std::cout << "异或1次的字符串:" << p1 << std::endl;
 
-	for (int i=0; i < strlen(p1); i++){
+	for (int i = 0; i < strlen(p1); i++){
 		p1[i] = p1[i] ^ key[i%keyLen];
 	}
 	std::cout << "异或2次的字符串:" << p1 << std::endl;
@@ -243,9 +243,9 @@ void TestVector(){
 	printf("p=%s,size=%d\n", str.c_str(), vect.size());
 
 	const char* p1 = "bcdef";
-	vect.insert(vect.end(), (const unsigned char*)p1, (const unsigned char*)p1+strlen(p1));
+	vect.insert(vect.end(), (const unsigned char*)p1, (const unsigned char*)p1 + strlen(p1));
 	p = vect.data();
-	str.insert(str.begin(), vect.begin(),vect.end());
+	str.insert(str.begin(), vect.begin(), vect.end());
 	printf("p=%s,size=%d\n", str.c_str(), vect.size());
 }
 
@@ -370,12 +370,12 @@ struct TLoginResult
 	t_uint32     uLessPoint;              //最少经验值 16
 
 	t_uint32     uMaxPoint;               //最多经验值 20
-	
+
 	//对齐，留空4字节
 	TUserData    UserInfoStruct;	      //用户信息   20+808=828
 
 	bool         rm_bISOpen;    	      //自动赠送专用 (rm = Receive Money)
-	
+
 	//对齐，留空7字节
 	t_int64      rm_i64Money;             //自动赠送专用,?
 
@@ -399,7 +399,7 @@ struct TLoginResult
 	t_int32      mbi_nPeopleLimit;        //开赛人数限制	
 	bool         mbi_ISBegin;             //人未满是否仍开赛 
 	bool         mbi_ISMatchEnd;          //比赛是否已经结束
-	
+
 	//对齐 留空2字节
 	t_int32      nVirtualUser;            //登录房间时即时获取虚拟玩家人数
 	t_int32      nPresentCoinNum;         //赠送金币数量
@@ -441,7 +441,7 @@ void TestStruct(){
 	int t5 = OFFSET(TLoginResult, nVirtualUser);
 	int t6 = OFFSET(TLoginResult, mbi_szMatchDesp);
 	int tEnd = OFFSET(TLoginResult, iBasePoint);
-	
+
 
 	int s1 = sizeof(a1);
 	int s2 = sizeof(a2);
@@ -454,18 +454,18 @@ struct ThreadT{
 	int step;
 };
 
-void AddThread(ThreadT& t,int step){
+void AddThread(ThreadT& t, int step){
 
 	for (int i = 0; i < 10; i++)
 	{
 		std::lock_guard<std::mutex> guard(*t.mutex);
 		printf("********************************************%x \n", std::this_thread::get_id());
-		printf("AddThread1 ,%d, %d\n", g_Cnt,t.step);
+		printf("AddThread1 ,%d, %d\n", g_Cnt, t.step);
 		g_Cnt += step;
 		printf("AddThread2 ,%d\n", g_Cnt);
 		Sleep(500);
 	}
-	
+
 }
 
 void SubThread(void* v){
@@ -473,7 +473,7 @@ void SubThread(void* v){
 	for (int i = 0; i < 10; i++)
 	{
 		std::lock_guard<std::mutex> guard(*t->mutex);
-		printf("******************************************** %x \n",std::this_thread::get_id());
+		printf("******************************************** %x \n", std::this_thread::get_id());
 		printf("SubThread1 ,%d\n", g_Cnt);
 		g_Cnt -= 1;
 		printf("SubThread2 ,%d\n", g_Cnt);
@@ -486,7 +486,7 @@ std::mutex g_mutex;
 ThreadT g_t;
 
 void TestThread(){
-	printf("********************测试 多线程************************** %x\n",std::this_thread::get_id());
+	printf("********************测试 多线程************************** %x\n", std::this_thread::get_id());
 
 	g_t.mutex = &g_mutex;
 	g_t.step = 4;
@@ -505,9 +505,14 @@ void TestThread(){
 	//sub.join();
 }
 
-size_t my_write_func(void *ptr, size_t size, size_t nmemb, FILE *stream)
+/*
+size 单字节个数
+nmemb 个数
+*/
+size_t my_write_func(void *ptr, size_t size, size_t nmemb, void *stream)
 {
-	return fwrite(ptr, size, nmemb, stream);
+	printf("[%d]%s\n", size*nmemb, ptr);
+	return fwrite(ptr, size, nmemb, (FILE*)stream);
 }
 
 #include "curl/curl.h"
@@ -522,9 +527,121 @@ int my_progress_func(char *progress_data,
 	return 0;
 }
 
+void TestCurlLocalCA(){
+	/* some requirements for this to work:
+	1.   set pCertFile to the file with the client certificate
+	2.   if the key is passphrase protected, set pPassphrase to the
+	passphrase you use
+	3.   if you are using a crypto engine:
+	3.1. set a #define USE_ENGINE
+	3.2. set pEngine to the name of the crypto engine you use
+	3.3. set pKeyName to the key identifier you want to use
+	4.   if you don't use a crypto engine:
+	4.1. set pKeyName to the file name of your client key
+	4.2. if the format of the key file is DER, set pKeyType to "DER"
+
+	!! verify of the server certificate is not implemented here !!
+
+	**** This example only works with libcurl 7.9.3 and later! ****
+
+	*/
+
+	CURL *curl;
+	CURLcode res;
+	FILE *headerfile;
+	const char *pPassphrase = NULL;
+
+	static const char *pCertFile = "testcert.pem";
+	static const char *pCACertFile = "cacert.pem";
+	static const char *pHeaderFile = "dumpit";
+
+	const char *pKeyName;
+	const char *pKeyType;
+
+	const char *pEngine;
+
+#ifdef USE_ENGINE
+	pKeyName = "rsa_test";
+	pKeyType = "ENG";
+	pEngine = "chil";            /* for nChiper HSM... */
+#else
+	pKeyName = "testkey.pem";
+	pKeyType = "PEM";
+	pEngine = NULL;
+#endif
+
+	headerfile = fopen(pHeaderFile, "wb");
+
+	curl_global_init(CURL_GLOBAL_DEFAULT);
+
+	curl = curl_easy_init();
+	if (curl) {
+		/* what call to write: */
+		curl_easy_setopt(curl, CURLOPT_URL, "HTTPS://your.favourite.ssl.site");
+		curl_easy_setopt(curl, CURLOPT_HEADERDATA, headerfile);
+
+		do { /* dummy loop, just to break out from */
+			if (pEngine) {
+				/* use crypto engine */
+				if (curl_easy_setopt(curl, CURLOPT_SSLENGINE, pEngine) != CURLE_OK) {
+					/* load the crypto engine */
+					fprintf(stderr, "can't set crypto engine\n");
+					break;
+				}
+				if (curl_easy_setopt(curl, CURLOPT_SSLENGINE_DEFAULT, 1L) != CURLE_OK) {
+					/* set the crypto engine as default */
+					/* only needed for the first time you load
+					a engine in a curl object... */
+					fprintf(stderr, "can't set crypto engine as default\n");
+					break;
+				}
+			}
+			/* cert is stored PEM coded in file... */
+			/* since PEM is default, we needn't set it for PEM */
+			curl_easy_setopt(curl, CURLOPT_SSLCERTTYPE, "PEM");
+
+			/* set the cert for client authentication */
+			curl_easy_setopt(curl, CURLOPT_SSLCERT, pCertFile);
+
+			/* sorry, for engine we must set the passphrase
+			(if the key has one...) */
+			if (pPassphrase)
+				curl_easy_setopt(curl, CURLOPT_KEYPASSWD, pPassphrase);
+
+			/* if we use a key stored in a crypto engine,
+			we must set the key type to "ENG" */
+			curl_easy_setopt(curl, CURLOPT_SSLKEYTYPE, pKeyType);
+
+			/* set the private key (file or ID in engine) */
+			curl_easy_setopt(curl, CURLOPT_SSLKEY, pKeyName);
+
+			/* set the file with the certs vaildating the server */
+			curl_easy_setopt(curl, CURLOPT_CAINFO, pCACertFile);
+
+			/* disconnect if we can't validate server's cert */
+			curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
+
+			/* Perform the request, res will get the return code */
+			res = curl_easy_perform(curl);
+			/* Check for errors */
+			if (res != CURLE_OK)
+				fprintf(stderr, "curl_easy_perform() failed: %s\n",
+				curl_easy_strerror(res));
+
+			/* we are done... */
+		} while (0);
+		/* always cleanup */
+		curl_easy_cleanup(curl);
+	}
+
+	curl_global_cleanup();
+
+	return;
+}
 
 void TestCurl(){
 	printf("********************测试 cURL**************************\n");
+
 	CURL *curl;
 	CURLcode res;
 	FILE *outfile;
@@ -532,12 +649,41 @@ void TestCurl(){
 	//char *url = "http://bpic.588ku.com/element_origin_min_pic/17/12/25/5296828180d0869d34634a881acad6a1.jpg";
 	char *progress_data = "* ";
 
+	curl_global_init(CURL_GLOBAL_DEFAULT);
+
 	curl = curl_easy_init();
 	if (curl)
 	{
 		outfile = fopen("xx.png", "wb");
 
 		curl_easy_setopt(curl, CURLOPT_URL, url);
+
+#define SKIP_PEER_VERIFICATION
+#ifdef SKIP_PEER_VERIFICATION
+		/*
+		* If you want to connect to a site who isn't using a certificate that is
+		* signed by one of the certs in the CA bundle you have, you can skip the
+		* verification of the server's certificate. This makes the connection
+		* A LOT LESS SECURE.
+		*
+		* If you have a CA cert for the server stored someplace else than in the
+		* default bundle, then the CURLOPT_CAPATH option might come handy for
+		* you.
+		*/
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);//验证本地证书
+		//curl_easy_setopt(curl, CURLOPT_CAPATH, "xxx.xx");//设置本地证书路径
+#endif
+
+#ifdef SKIP_HOSTNAME_VERIFICATION
+		/*
+		* If the site you're connecting to uses a different host name that what
+		* they have mentioned in their server certificate's commonName (or
+		* subjectAltName) fields, libcurl will refuse to connect. You can skip
+		* this check, but this will make the connection less secure.
+		*/
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+#endif
+
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, outfile);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, my_write_func);
 		curl_easy_setopt(curl, CURLOPT_NOPROGRESS, FALSE);
@@ -546,10 +692,16 @@ void TestCurl(){
 
 		res = curl_easy_perform(curl);
 
+		if (res != CURLE_OK)
+			fprintf(stderr, "curl_easy_perform() failed: %d(%s)\n", res, curl_easy_strerror(res));
+
+		fflush(outfile);
 		fclose(outfile);
 		/* always cleanup */
 		curl_easy_cleanup(curl);
 	}
+
+	curl_global_cleanup();
 }
 
 #define	OP_LITTLEENDIAN	'<'		/* little endian */
@@ -580,13 +732,13 @@ void doswap(int swap, void *p, size_t n)
 }
 
 /*取两个数的公约数*/
-int getGCD(int p,int q){//辗转相除法
+int getGCD(int p, int q){//辗转相除法
 	if (p < q){//位置互换
 		p = p ^ q;
 		q = p ^ q;
 		p = p ^ q;
 	}
-	
+
 	do{
 		int mod = p % q;
 		if (mod == 0){
@@ -605,7 +757,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	short num1 = 0x1234;
 	int num2 = 0x12345678;
 	long long num3 = 0x123456789abcdeff;
-	
+
 	char* p = (char*)&num1;
 	printf("&num1 = %#x\n", p);
 	p = (char*)&num2;
@@ -618,7 +770,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		数据高位放在高位地址 0x9f < 0x8f  产出 < 小端
 		数据高位放在低位地址 0x8f > 0x9f  产出 > 大端
-	*/
+		*/
 	unsigned char big0 = p[0];
 	printf("小端 %#x : %x,%#X,%x,%x\n", big0, p[0] & 0xff, p[1] & 0xff, pU[2], p[3]);
 
@@ -633,6 +785,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	//TestThread();
 
 	TestCurl();
+	//TestCurlLocalCA();
 
 	getchar();
 
