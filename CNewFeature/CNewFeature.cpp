@@ -505,6 +505,53 @@ void TestThread(){
 	//sub.join();
 }
 
+size_t my_write_func(void *ptr, size_t size, size_t nmemb, FILE *stream)
+{
+	return fwrite(ptr, size, nmemb, stream);
+}
+
+#include "curl/curl.h"
+
+int my_progress_func(char *progress_data,
+	double t, /* dltotal */
+	double d, /* dlnow */
+	double ultotal,
+	double ulnow)
+{
+	printf("%s %g / %g (%g %%)\n", progress_data, d, t, d*100.0 / t);
+	return 0;
+}
+
+
+void TestCurl(){
+	printf("********************≤‚ ‘ cURL**************************\n");
+	CURL *curl;
+	CURLcode res;
+	FILE *outfile;
+	char *url = "https://upload-images.jianshu.io/upload_images/5109294-2fbc423082a3ebfe.png";
+	//char *url = "http://bpic.588ku.com/element_origin_min_pic/17/12/25/5296828180d0869d34634a881acad6a1.jpg";
+	char *progress_data = "* ";
+
+	curl = curl_easy_init();
+	if (curl)
+	{
+		outfile = fopen("xx.png", "wb");
+
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, outfile);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, my_write_func);
+		curl_easy_setopt(curl, CURLOPT_NOPROGRESS, FALSE);
+		curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, my_progress_func);
+		curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, progress_data);
+
+		res = curl_easy_perform(curl);
+
+		fclose(outfile);
+		/* always cleanup */
+		curl_easy_cleanup(curl);
+	}
+}
+
 #define	OP_LITTLEENDIAN	'<'		/* little endian */
 #define	OP_BIGENDIAN	'>'		/* big endian */
 #define	OP_NATIVE	'='		/* native endian */
@@ -583,7 +630,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	TestVector();
 	TestUnion();
 	TestStruct();
-	TestThread();
+	//TestThread();
+
+	TestCurl();
 
 	getchar();
 
