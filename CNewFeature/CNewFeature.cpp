@@ -142,6 +142,10 @@ void TestBind(){
 	int n = 7;
 	// (_1 and _2 are from std::placeholders, and represent future
 	// arguments that will be passed to f1)
+	/*
+	std::ref 用于包装按引用传递的值。 
+	std::cref 用于包装按const引用传递的值。
+	*/
 	auto f1 = std::bind(f, std::placeholders::_2, std::placeholders::_1, 42, std::cref(n), n);
 	n = 10;
 	f1(1, 2, 1001);
