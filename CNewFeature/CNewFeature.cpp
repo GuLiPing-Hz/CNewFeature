@@ -899,6 +899,19 @@ int getGCD(int p, int q){//辗转相除法
 	} while (true);
 }
 
+typedef struct {
+	int flag;//1表示路，0表示墙
+	int res;//物品
+	int resPos;//物品挂在墙上的位置，0表示左边或者上边，1表示右边或者下边
+}MazeItem;
+void MakeMaze() {
+
+}
+void TestMaze(int l) {
+	std::vector<MazeItem> vMaze;
+	vMaze.resize(l * l);
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	int g1 = getGCD(8850, 12345678);
@@ -939,6 +952,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	TestCurl();
 	//TestCurlLocalCA();
+
+	TestMaze();
 
 	getchar();
 
