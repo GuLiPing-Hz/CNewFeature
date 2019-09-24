@@ -10,7 +10,7 @@
 	4. 右值引用
 
 	*/
-/************************************************************************/
+	/************************************************************************/
 
 #include "stdafx.h"
 #include <string>
@@ -26,16 +26,16 @@
 #include <mutex>
 #include <sstream>
 
-class C11{
+class C11 {
 
 public:
-	C11(){
+	C11() {
 
 	}
 
 	//可变长模板参数测试
 	template<typename... Tx>
-	static void test1(const char* format, Tx... param){
+	static void test1(const char* format, Tx... param) {
 		printf(format, param...);
 
 		//递归调用getJNISignature，参数从右往左
@@ -96,11 +96,11 @@ public:
 
 	//std::function
 	std::function<void()> mFunc;
-	void setFunc(std::function<void()> lam){
+	void setFunc(std::function<void()> lam) {
 		mFunc = lam;
 	}
 
-	void test2(){
+	void test2() {
 		if (mFunc)
 			mFunc();
 	}
@@ -126,10 +126,10 @@ struct Foo {
 };
 
 struct Value {
-	void lrValue(int &a){//左值引用
+	void lrValue(int &a) {//左值引用
 		std::cout << "left value " << a << std::endl;
 	}
-	void lrValue(int &&a){//右值引用
+	void lrValue(int &&a) {//右值引用
 		std::cout << "right value " << a << std::endl;
 		std::cout << "right value " << ++a << std::endl;//可变
 
@@ -137,14 +137,14 @@ struct Value {
 	}
 };
 
-void TestBind(){
+void TestBind() {
 	printf("******************测试 std::bind****************************\n");
 	//std::bind测试
 	int n = 7;
 	// (_1 and _2 are from std::placeholders, and represent future
 	// arguments that will be passed to f1)
 	/*
-	std::ref 用于包装按引用传递的值。 
+	std::ref 用于包装按引用传递的值。
 	std::cref 用于包装按const引用传递的值。
 	*/
 	auto f1 = std::bind(f, std::placeholders::_2, std::placeholders::_1, 42, std::cref(n), n);
@@ -171,14 +171,14 @@ void TestBind(){
 	printf("f4 = %d\n", f4());
 }
 
-void TestTemplate(){
+void TestTemplate() {
 
 	printf("*********************可变长模板参数*************************\n");
 	//可变长模板参数
 	C11::test1("[%s] %d + %d = %d\n", "add", 1, 2, 3);
 	const char* s1 = "123456";
 
-	auto lam = [s1]()->void{
+	auto lam = [s1]()->void {
 		printf("%s\n", s1);
 	};
 	C11 obj;
@@ -186,7 +186,7 @@ void TestTemplate(){
 	obj.test2();
 }
 
-void TestMove(){
+void TestMove() {
 	printf("********************测试 std::move**************************\n");
 	std::string str = "Hello";
 	std::vector<std::string> v;
@@ -206,7 +206,7 @@ void TestMove(){
 	std::cout << "我们的字符串队列 \"" << v[0] << "\", \"" << v[1] << "\"\n";
 }
 
-void TestRightValue(){
+void TestRightValue() {
 	printf("********************测试 右值引用**************************\n");
 	Value va;
 	int val = 10;
@@ -217,19 +217,19 @@ void TestRightValue(){
 	va.lrValue(10);//右值引用
 }
 
-void TestXor(){
+void TestXor() {
 	printf("********************测试 异或**************************\n");
 	char p1[] = "123abc";
 	const char* key = "xxxxx";
 	std::cout << "原来的字符串:" << p1 << std::endl;
 
 	int keyLen = strlen(key);
-	for (unsigned int i = 0; i < strlen(p1); i++){
+	for (unsigned int i = 0; i < strlen(p1); i++) {
 		p1[i] = p1[i] ^ key[i%keyLen];
 	}
 	std::cout << "异或1次的字符串:" << p1 << std::endl;
 
-	for (unsigned int i = 0; i < strlen(p1); i++){
+	for (unsigned int i = 0; i < strlen(p1); i++) {
 		p1[i] = p1[i] ^ key[i%keyLen];
 	}
 	std::cout << "异或2次的字符串:" << p1 << std::endl;
@@ -238,7 +238,7 @@ void TestXor(){
 	std::auto_ptr<char>pA(p);
 }
 
-void TestVector(){
+void TestVector() {
 	printf("********************测试 Vector**************************\n");
 	std::vector<unsigned char> vect;
 	std::string str;
@@ -254,7 +254,7 @@ void TestVector(){
 	printf("p=%s,size=%d\n", str.c_str(), vect.size());
 }
 
-struct BufferUnit{
+struct BufferUnit {
 	enum DataType
 	{
 		type_char = 1,//[16+1][数组长度][data]
@@ -267,8 +267,8 @@ struct BufferUnit{
 		type_array = 16,//
 	};
 
-	BufferUnit(){ memset(&data, 0, sizeof(data)); }
-	virtual ~BufferUnit(){}
+	BufferUnit() { memset(&data, 0, sizeof(data)); }
+	virtual ~BufferUnit() {}
 
 	int type;
 
@@ -286,12 +286,12 @@ struct BufferUnit{
 	std::string str;
 };
 
-void printUnion(BufferUnit& bu){
+void printUnion(BufferUnit& bu) {
 	printf("union %c(%d),%d,%d,%lld,%f\n", bu.data.c, bu.data.c, bu.data.s, bu.data.i
 		, bu.data.ll, bu.data.f);
 }
 
-void TestUnion(){
+void TestUnion() {
 	printf("********************测试 联合和map无效的key值************************** %s\n", __FUNCTION__);
 
 	BufferUnit bu;
@@ -425,7 +425,7 @@ struct TLoginResult
 };
 
 #define OFFSET(struc,e) ((int)(&((struc*)0)->e))
-void TestStruct(){
+void TestStruct() {
 	printf("********************测试 Struct**************************\n");
 	TUserData a1 = { 0 };
 	TLoginResult a2 = { 0 };
@@ -454,12 +454,12 @@ void TestStruct(){
 
 int g_Cnt = 0;
 
-struct ThreadT{
+struct ThreadT {
 	std::mutex* mutex;
 	int step;
 };
 
-void AddThread(ThreadT& t, int step){
+void AddThread(ThreadT& t, int step) {
 
 	for (int i = 0; i < 10; i++)
 	{
@@ -475,7 +475,7 @@ void AddThread(ThreadT& t, int step){
 
 }
 
-void SubThread(void* v){
+void SubThread(void* v) {
 	ThreadT* t = (ThreadT*)v;
 	for (int i = 0; i < 10; i++)
 	{
@@ -494,7 +494,7 @@ void SubThread(void* v){
 std::mutex g_mutex;
 ThreadT g_t;
 
-void TestThread(){
+void TestThread() {
 	std::stringstream ss;
 	ss << std::this_thread::get_id();
 	printf("********************测试 多线程************************%s \n", ss.str().c_str());
@@ -562,7 +562,7 @@ int TestCurlMulti(void)
 	int msgs_left; /* how many messages are left */
 
 	/* Allocate one CURL handle per transfer */
-	for (i = 0; i<HANDLECOUNT; i++)
+	for (i = 0; i < HANDLECOUNT; i++)
 		handles[i] = curl_easy_init();
 
 	/* set the options (I left out a few, you'll get the point anyway) */
@@ -575,7 +575,7 @@ int TestCurlMulti(void)
 	multi_handle = curl_multi_init();
 
 	/* add the individual transfers */
-	for (i = 0; i<HANDLECOUNT; i++)
+	for (i = 0; i < HANDLECOUNT; i++)
 		curl_multi_add_handle(multi_handle, handles[i]);
 
 	/* we start some action by calling perform right away */
@@ -657,7 +657,7 @@ int TestCurlMulti(void)
 			int idx, found = 0;
 
 			/* Find out which handle this message is about */
-			for (idx = 0; idx<HANDLECOUNT; idx++) {
+			for (idx = 0; idx < HANDLECOUNT; idx++) {
 				found = (msg->easy_handle == handles[idx]);
 				if (found)
 					break;
@@ -677,13 +677,13 @@ int TestCurlMulti(void)
 	curl_multi_cleanup(multi_handle);
 
 	/* Free the CURL handles */
-	for (i = 0; i<HANDLECOUNT; i++)
+	for (i = 0; i < HANDLECOUNT; i++)
 		curl_easy_cleanup(handles[i]);
 
 	return 0;
 }
 
-void TestCurlLocalCA(){
+void TestCurlLocalCA() {
 	/* some requirements for this to work:
 	1.   set pCertFile to the file with the client certificate
 	2.   if the key is passphrase protected, set pPassphrase to the
@@ -782,7 +782,7 @@ void TestCurlLocalCA(){
 			/* Check for errors */
 			if (res != CURLE_OK)
 				fprintf(stderr, "curl_easy_perform() failed: %s\n",
-				curl_easy_strerror(res));
+					curl_easy_strerror(res));
 
 			/* we are done... */
 		} while (0);
@@ -795,7 +795,7 @@ void TestCurlLocalCA(){
 	return;
 }
 
-void TestCurl(){
+void TestCurl() {
 	printf("********************测试 cURL**************************\n");
 
 	CURL *curl;
@@ -888,16 +888,16 @@ void doswap(int swap, void *p, size_t n)
 }
 
 /*取两个数的公约数*/
-int getGCD(int p, int q){//辗转相除法
-	if (p < q){//位置互换
+int getGCD(int p, int q) {//辗转相除法
+	if (p < q) {//位置互换
 		p = p ^ q;
 		q = p ^ q;
 		p = p ^ q;
 	}
 
-	do{
+	do {
 		int mod = p % q;
-		if (mod == 0){
+		if (mod == 0) {
 			return q;
 		}
 
@@ -919,6 +919,9 @@ void TestMaze(int l) {
 	vMaze.resize(l * l);
 }
 
+#ifdef min
+#undef min
+#endif
 #include <grpcpp/grpcpp.h>
 #include "grpc-example/rpcfirst.grpc.pb.h"
 class RPRService :public RPCFirst::Demo::Service
