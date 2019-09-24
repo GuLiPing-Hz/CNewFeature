@@ -24,6 +24,7 @@
 #include <windows.h>
 #include <map>
 #include <mutex>
+#include <sstream>
 
 class C11{
 
@@ -223,12 +224,12 @@ void TestXor(){
 	std::cout << "原来的字符串:" << p1 << std::endl;
 
 	int keyLen = strlen(key);
-	for (int i = 0; i < strlen(p1); i++){
+	for (unsigned int i = 0; i < strlen(p1); i++){
 		p1[i] = p1[i] ^ key[i%keyLen];
 	}
 	std::cout << "异或1次的字符串:" << p1 << std::endl;
 
-	for (int i = 0; i < strlen(p1); i++){
+	for (unsigned int i = 0; i < strlen(p1); i++){
 		p1[i] = p1[i] ^ key[i%keyLen];
 	}
 	std::cout << "异或2次的字符串:" << p1 << std::endl;
@@ -463,7 +464,9 @@ void AddThread(ThreadT& t, int step){
 	for (int i = 0; i < 10; i++)
 	{
 		std::lock_guard<std::mutex> guard(*t.mutex);
-		printf("********************************************%x \n", std::this_thread::get_id());
+		std::stringstream ss;
+		ss << std::this_thread::get_id();
+		printf("********************************************%s \n", ss.str().c_str());
 		printf("AddThread1 ,%d, %d\n", g_Cnt, t.step);
 		g_Cnt += step;
 		printf("AddThread2 ,%d\n", g_Cnt);
@@ -477,7 +480,9 @@ void SubThread(void* v){
 	for (int i = 0; i < 10; i++)
 	{
 		std::lock_guard<std::mutex> guard(*t->mutex);
-		printf("******************************************** %x \n", std::this_thread::get_id());
+		std::stringstream ss;
+		ss << std::this_thread::get_id();
+		printf("********************************************%s \n", ss.str().c_str());
 		printf("SubThread1 ,%d\n", g_Cnt);
 		g_Cnt -= 1;
 		printf("SubThread2 ,%d\n", g_Cnt);
@@ -490,7 +495,9 @@ std::mutex g_mutex;
 ThreadT g_t;
 
 void TestThread(){
-	printf("********************测试 多线程************************** %x\n", std::this_thread::get_id());
+	std::stringstream ss;
+	ss << std::this_thread::get_id();
+	printf("********************测试 多线程************************%s \n", ss.str().c_str());
 
 	g_t.mutex = &g_mutex;
 	g_t.step = 4;
@@ -515,7 +522,7 @@ nmemb 个数
 */
 size_t my_write_func(void *ptr, size_t size, size_t nmemb, void *stream)
 {
-	printf("[%d]%s\n", size*nmemb, ptr);
+	printf("[%d]%p\n", size*nmemb, ptr);
 	return fwrite(ptr, size, nmemb, (FILE*)stream);
 }
 
@@ -912,6 +919,37 @@ void TestMaze(int l) {
 	vMaze.resize(l * l);
 }
 
+#include <grpcpp/grpcpp.h>
+#include "grpc-example/rpcfirst.grpc.pb.h"
+class RPRService :public RPCFirst::Demo::Service
+{
+public:
+	RPRService() {}
+	virtual ~RPRService() {}
+
+	// RPC普通方法，一次调用一次返回
+	virtual ::grpc::Status SayHello(::grpc::ServerContext* context, const ::RPCFirst::ReqHello* request, ::RPCFirst::RespHello* response) {
+		printf("context=%p\n", context);
+
+		std::stringstream ss;
+		ss << "[c++] Hi " << request->name() << ", you are " << request->age();
+		response->set_hi(ss.str());
+		return ::grpc::Status::OK;
+	}
+};
+
+void TestRPCClient() {
+	std::string server_address("0.0.0.0:8001");
+	RPRService service();
+
+	::grpc::ServerBuilder builder;
+	builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+	builder.RegisterService(&service);
+	std::unique_ptr<Server> server(builder.BuildAndStart());
+	std::cout << "Server listening on " << server_address << std::endl;
+	server->Wait();
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	int g1 = getGCD(8850, 12345678);
@@ -953,7 +991,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	TestCurl();
 	//TestCurlLocalCA();
 
-	TestMaze();
+	TestMaze(1);
+
+	//gRPC demo
+	TestRPCClient();
 
 	getchar();
 

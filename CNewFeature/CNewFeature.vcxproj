@@ -54,6 +54,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)CNewFeature\grpc\protobuf;$(SolutionDir)CNewFeature\grpc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -91,15 +92,22 @@
     <ClInclude Include="curl\multi.h" />
     <ClInclude Include="curl\stdcheaders.h" />
     <ClInclude Include="curl\typecheck-gcc.h" />
+    <ClInclude Include="grpc-example\rpcfirst.grpc.pb.h" />
+    <ClInclude Include="grpc-example\rpcfirst.pb.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CNewFeature.cpp" />
+    <ClCompile Include="grpc-example\rpcfirst.grpc.pb.cc" />
+    <ClCompile Include="grpc-example\rpcfirst.pb.cc" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="curl\libcurl.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="grpc-example\rpcfirst.proto" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

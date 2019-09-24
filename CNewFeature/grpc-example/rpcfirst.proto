@@ -1,0 +1,57 @@
+//gRPC示例项目
+
+/*
+-- proto 变量类型选择:
+-- int32 使用可变长编码方式。编码负数时不够高效——如果你的字段可能含有负数，那么请使用sint32。
+-- int64 使用可变长编码方式。编码负数时不够高效——如果你的字段可能含有负数，那么请使用sint64
+
+编译成pb文件
+protoc -o PbLobbyData.pb PbLobbyData.proto
+
+编译go文件
+protoc --go_out=./src/PbLobbyData PbLobbyData.proto
+
+编译生成gRPC文件
+protoc --go_out=plugins=grpc:. PbLobbyData.proto
+
+编译出来的go文件，务必把json中的 omitempty 去掉，否则查看数据的时候为0就不序列成字符串了。。
+
+#2 C++版本的gRPC
+生成c++代码的gRPC文件
+这里指定插件的时候一定要是全路径，，不是全路径会提示找不到。。
+protoc --grpc_out=cpp --plugin=protoc-gen-grpc=D:\sdk\protoc\bin\grpc_cpp_plugin.exe rpcfirst.proto
+protoc --cpp_out=./cpp rpcfirst.proto
+*/
+
+//指定proto3语法
+syntax = "proto3";
+
+//指定包名
+package RPCFirst;
+
+//请求结构类型
+message ReqHello {
+    string name = 1;
+    int32 age = 2;
+}
+
+//返回结构类型
+message RespHello {
+    string hi = 1;
+}
+
+//定义gRPC服务
+service Demo {
+    //RPC普通方法，一次调用一次返回
+    rpc SayHello (ReqHello) returns (RespHello) {
+    }
+    //RPC 一次请求，流式返回
+    rpc LotsOfReplies (ReqHello) returns (stream RespHello) {
+    }
+    //RPC 流式请求，一次返回
+    rpc LotsOfGreetings (stream ReqHello) returns (RespHello) {
+    }
+    //RPC 流式请求，流式返回
+    rpc BidiHello (stream ReqHello) returns (stream RespHello) {
+    }
+}

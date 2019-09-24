@@ -16,6 +16,12 @@
     <Filter Include="curl">
       <UniqueIdentifier>{40fa71f9-9eca-4715-ab1c-2b11c60f4b15}</UniqueIdentifier>
     </Filter>
+    <Filter Include="grpc-example">
+      <UniqueIdentifier>{35495626-9f0d-401d-a087-962146e27c12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="grpc">
+      <UniqueIdentifier>{e17c9c08-69e2-4971-b375-4db5de5422ab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -54,6 +60,12 @@
     <ClInclude Include="curl\mprintf.h">
       <Filter>curl</Filter>
     </ClInclude>
+    <ClInclude Include="grpc-example\rpcfirst.grpc.pb.h">
+      <Filter>grpc-example</Filter>
+    </ClInclude>
+    <ClInclude Include="grpc-example\rpcfirst.pb.h">
+      <Filter>grpc-example</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -62,10 +74,21 @@
     <ClCompile Include="CNewFeature.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="grpc-example\rpcfirst.grpc.pb.cc">
+      <Filter>grpc-example</Filter>
+    </ClCompile>
+    <ClCompile Include="grpc-example\rpcfirst.pb.cc">
+      <Filter>grpc-example</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="curl\libcurl.lib">
       <Filter>curl</Filter>
     </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="grpc-example\rpcfirst.proto">
+      <Filter>grpc-example</Filter>
+    </None>
   </ItemGroup>
 </Project>
