@@ -919,40 +919,6 @@ void TestMaze(int l) {
 	vMaze.resize(l * l);
 }
 
-#ifdef min
-#undef min
-#endif
-#include <grpcpp/grpcpp.h>
-#include "grpc-example/rpcfirst.grpc.pb.h"
-class RPRService :public RPCFirst::Demo::Service
-{
-public:
-	RPRService() {}
-	virtual ~RPRService() {}
-
-	// RPC普通方法，一次调用一次返回
-	virtual ::grpc::Status SayHello(::grpc::ServerContext* context, const ::RPCFirst::ReqHello* request, ::RPCFirst::RespHello* response) {
-		printf("context=%p\n", context);
-
-		std::stringstream ss;
-		ss << "[c++] Hi " << request->name() << ", you are " << request->age();
-		response->set_hi(ss.str());
-		return ::grpc::Status::OK;
-	}
-};
-
-void TestRPCClient() {
-	std::string server_address("0.0.0.0:8001");
-	RPRService service();
-
-	::grpc::ServerBuilder builder;
-	builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
-	builder.RegisterService(&service);
-	std::unique_ptr<Server> server(builder.BuildAndStart());
-	std::cout << "Server listening on " << server_address << std::endl;
-	server->Wait();
-}
-
 int _tmain(int argc, _TCHAR* argv[])
 {
 	int g1 = getGCD(8850, 12345678);
@@ -995,9 +961,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	//TestCurlLocalCA();
 
 	TestMaze(1);
-
-	//gRPC demo
-	TestRPCClient();
 
 	getchar();
 

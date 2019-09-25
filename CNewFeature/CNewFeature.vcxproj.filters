@@ -80,6 +80,9 @@
     <ClCompile Include="grpc-example\rpcfirst.pb.cc">
       <Filter>grpc-example</Filter>
     </ClCompile>
+    <ClCompile Include="grpc_main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="curl\libcurl.lib">
