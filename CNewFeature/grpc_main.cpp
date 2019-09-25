@@ -1,4 +1,9 @@
 #include <sstream>
+#include <windows.h>
+
+#ifdef min
+#undef min
+#endif
 
 #include <grpcpp/grpcpp.h>
 #include "grpc-example/rpcfirst.grpc.pb.h"
@@ -21,7 +26,7 @@ public:
 
 void TestRPCClient() {
 	std::string server_address("0.0.0.0:8001");
-	RPCService service();
+	RPCService service;
 
 	::grpc::ServerBuilder builder;
 	builder.AddListeningPort(server_address, ::grpc::InsecureServerCredentials());
@@ -30,6 +35,8 @@ void TestRPCClient() {
 	std::cout << "Server listening on " << server_address << std::endl;
 	server->Wait();
 }
+
+#pragma comment(lib,"ws2_32.lib")
 
 void main() {
 	//gRPC demo
